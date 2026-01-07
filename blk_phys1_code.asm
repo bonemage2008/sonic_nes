@@ -1248,10 +1248,13 @@ loc_8CABD:
 		LDX	#$19
 		LDA	sonic_attribs	; 0x4 -	up, 0x43 - left, 01-left
 		AND	#$40
-		BEQ	loc_8CACF
+		BEQ	@loc_8CACF
 		LDX	#$20
+		BNE	@write_walk_add ; JMP
+@loc_8CACF:
+		JSR	slope_fix
 
-loc_8CACF:
+@write_walk_add:
 		STX	round_walk_spr_add
 		LDA	#0
 		STA	sonic_rwalk_attr
@@ -1616,6 +1619,28 @@ loc_8CCA1:
 		STA	sonic_attribs	; 0x4 -	up, 0x43 - left, 01-left
 		LDA	#0
 		STA	round_walk_spr_add
+		
+		LDA	sonic_anim_num
+		CMP	#$A ; get hit
+		BEQ	@stuck_fix2
+		
+		LDA	spin_ctrl_flag
+		ORA	demo_func_id
+		BNE	@no_fix
+@stuck_fix2:
+		LDA	#0
+		STA	sonic_Y_speed
+@no_fix:
+		RTS
+; ---------------------------------------------------------------------------
+; fix stuck in slopes for new mode with spin_ctrl_flag = 0
+slope_fix:
+		LDA	sonic_Y_speed
+		CMP	#$60
+		BCC	@no_limit
+		LDA	#0
+		STA	sonic_Y_speed
+@no_limit:
 		RTS
 ; ---------------------------------------------------------------------------
 
@@ -1941,10 +1966,11 @@ loc_8CE75:
 		LDX	#$20
 		LDA	sonic_attribs	; 0x4 -	up, 0x43 - left, 01-left
 		AND	#$40
-		BEQ	loc_8CE87
+		BEQ	@loc_8CE87
 		LDX	#$19
+		JSR	slope_fix
 
-loc_8CE87:
+@loc_8CE87:	
 		STX	round_walk_spr_add
 		LDA	#$40
 		STA	sonic_rwalk_attr
@@ -1987,14 +2013,24 @@ sub_8CEB2:
 		BNE	loc_8CED0
 
 loc_8CEC2:
-		LDA	sonic_X_speed
+		LDA	spin_ctrl_flag
+		ORA	demo_func_id
+		BNE	@c1
+		LDA	sonic_anim_num
+		CMP	#$20
+		BNE	@c1
+		LDA	#28 ; with spin_ctrl_flag = 0 and anim $20
+		BNE	@c2
+@c1:
+		LDA	#7+7 ; SPEED INC IN SLOPES
+@c2:
 		CLC
-		ADC	#7+7
+		ADC	sonic_X_speed
 		CMP	#$E0
-		BCC	loc_8CECD
+		BCC	@loc_8CECD
 		LDA	#$E0
 
-loc_8CECD:
+@loc_8CECD:
 		STA	sonic_X_speed
 		RTS
 ; ---------------------------------------------------------------------------
@@ -2452,6 +2488,3 @@ sub_8D9D5:
 		STA	sonic_Y_speed
 		RTS
 ; End of function sub_8D9D5
-
-		;.pad	$A000,$00
-		

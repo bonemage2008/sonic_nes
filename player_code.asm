@@ -1305,9 +1305,13 @@ do_spindash:
 @start_spindash_run:
 		LDA	#$20
 		STA	sonic_anim_num
-		;LDA	#$F6
-		LDA	#$F0
-		STA	sonic_X_speed
+		LDY	#$F0
+		LDA	demo_func_id
+		ORA	spin_ctrl_flag
+		BNE	@set_spindash_speed
+		LDY	#$F8
+@set_spindash_speed:
+		STY	sonic_X_speed
 		RTS
 ; ---------------------------------------------------------------------------
 
@@ -1639,11 +1643,12 @@ the_jabu_hack:
 ; ---------------------------------------------------------------------------
 
 @jabu_hack2:
-		IF	(SPIN_CTRL=1)
-		JMP	sonic_check_LR ; this hack allows to accelerate while spin.
-		
-		ELSE
-		
+		LDA	demo_func_id
+		ORA	spin_ctrl_flag
+		BEQ	@no_spin_accel
+		JMP	sonic_check_LR ; this hack allows to accelerate while spin.	
+
+@no_spin_accel:	
 		LDA	joy1_hold	; this hack version more closier to MD
 		AND	#BUTTON_RIGHT|BUTTON_LEFT
 		BEQ	@same_dir
@@ -1662,8 +1667,6 @@ the_jabu_hack:
 		STA	sonic_X_speed
 @same_dir
 		RTS
-
-		ENDIF
 ; End of function sub_B3D80
 
 ; ---------------------------------------------------------------------------

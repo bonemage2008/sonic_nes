@@ -11,7 +11,7 @@ TEST_SPR equ 0 ; include test sprites code
 
 SBZ2_DISABLE = 0 ; 1 = disable SCRAP BRAIN ZONE ACT2, 2 = plus disable in cheat menu.
 
-TEST_MODE = 0 ; one button cheat code, allow to select emeralds/special number.
+SIMPLE_CHEAT = 0 ; one button cheat code, allow to select emeralds/special number.
 
 TEST_SONIC_SPR = 0 ; use old anim ptrs pl_spr_cfg_ptrs while holding select button.
 
@@ -33,7 +33,7 @@ SONIC_AIR_ACC = 2  ; acceleration value while in air if hold same direction butt
                    ; 0-1 = lose X_speed, 2 = keep same X_speed value, 3 or greater - adds X_speed.
 SONIC_AIR_ACC_SPIN  = 3	; spin in air (anim $20) accelaretion value.
 
-SPIN_CTRL = 1 ; allow to accelerate and skid in spin (not equal MD)
+;SPIN_CTRL = 1 ; allow to accelerate and skid in spin (not equal MD)
 SPIN_IN_AIR = 1 ; allow to spin in air if press down (not equal MD)
 JUMP_CTRL = 1 ; allow to instant dir change in jump anim (not equal MD)
 AIR_SKID = 2 ; allow to skid in air (not equal MD)
@@ -177,10 +177,6 @@ good_spr:
 		include	bkg_read_code.asm
 		include	good_ending.asm
 		include	menus_code2.asm
-options_attribs:
-		incbin	menu\options_attrs1.bin
-		incbin	menu\options_attrs2.bin
-		incbin	menu\options_attrs3.bin
 		.pad	$C000,$FF
 		
 		.base	$8000	; 34010

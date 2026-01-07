@@ -1260,7 +1260,8 @@ collision_type5:
 		LDA	super_em_cnt
 		CMP	#7
 		BNE	@all_emeralds
-		INC	rings_100s ; add 100 rings for big ring
+		;INC	rings_100s ; add 100 rings for big ring
+		JSR	add_100_rings
 
 @all_emeralds:
 		LDA	#210-16-1
@@ -1361,8 +1362,11 @@ loc_80ABB:				; 8 - jump roll, $1F - spin start, $20 -spin
 
 @jump_roll:
 		JSR	monitor_destroy_from_up_check
-		BCC	@ret
-				; 896B
+		;BCC	@ret
+		;BCC	@monitor_chk_coll ; v1.7b fix
+		;BCC	destroy_monitor_from_side ; v1.7b alternate fix - most safe, but destroys monitor
+		BCC	@monitor_fix_v3 ; v1.7b fix v3
+
 		LDA	sonic_state	; superS
 		BPL	@ret
 		LDA	obj_collision_flag
@@ -1371,6 +1375,21 @@ loc_80ABB:				; 8 - jump roll, $1F - spin start, $20 -spin
 		CMP	#$1D	; object_explode
 		BNE	destroy_monitor	; always destroy monitor
 @ret
+		RTS
+		
+@monitor_fix_v3:
+		LDA	obj_collision_flag
+		BNE	@not_on_monitor2
+		RTS
+		;JMP	sonic_stand_on_monitor
+@not_on_monitor2:
+;		LDA	objects_Y_relative_h,X
+;		CMP	#$FF
+;		BNE	@no_fix3
+		LDA	objects_Y_relative_l,X
+		CMP	#$E0
+		BCS	destroy_monitor_from_side
+;@no_fix3:
 		RTS
 ; ---------------------------------------------------------------------------
 

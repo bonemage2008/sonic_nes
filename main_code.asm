@@ -1419,6 +1419,9 @@ RESET:
 		CPX	#$FE
 		BCC	@clr_ram
 		
+		LDA	#1
+		STA	spin_ctrl_flag
+		
 		JSR	reset_update_flags
 		LDA	#>write_32_tiles
 		STA	ptr_high
@@ -2819,115 +2822,115 @@ palettes:	.WORD GHZ_PAL		; 0
 		.WORD scrap_brain_pal2  ; 12
 		
 GHZ_PAL:                     ; GREEN HILL ZONE
-	.BYTE  $21,   7, $15, $28; bkg
+	.BYTE  $21,   7, $15, $28 ; bkg
 	.BYTE  $21,   3, $11, $30
 	.BYTE  $21, $17, $27, $37
 	.BYTE  $21,   7, $1A, $2A
-	.BYTE  $21,   1, $16, $36; spr
+	.BYTE  $21,   1, $16, $36 ; spr
 	.BYTE  $21,   1, $11, $36
-	.BYTE  $21,  $F, $29, $30; X
+	.BYTE  $21,  $F, $29, $30 ; X
 	.BYTE  $21,   7, $27, $30
 
 marble_pal:                  ; MARBLE ZONE
-	.BYTE    3,  $F,   0, $36; bkg
+	.BYTE    3,  $F,   0, $36 ; bkg
 	.BYTE    3,   6, $16, $27
 	.BYTE    3, $14, $24, $30
 	.BYTE    3,   9, $19, $2A
-	.BYTE    3,   1, $16, $36; spr
+	.BYTE    3,   1, $16, $36 ; spr
 	.BYTE    3,   1, $11, $36
-	.BYTE    3,   4, $24, $30; X
+	.BYTE    3,   4, $24, $30 ; X
 	.BYTE    3,   7, $27, $30
 
 spring_pal:                  ; SPRING YARD ZONE
-	.BYTE    4,   7, $17, $38; bkg
+	.BYTE    4,   7, $17, $38 ; bkg
 	.BYTE    4,  $F, $1B, $37
 	.BYTE    4, $14, $24, $20
 	.BYTE    4, $17, $27, $37
-	.BYTE    4,   1, $16, $36; spr
+	.BYTE    4,   1, $16, $36 ; spr
 	.BYTE    4,   1, $11, $36
-	.BYTE    4,   8, $24, $30; X
+	.BYTE    4,   8, $24, $30 ; X
 	.BYTE    4,   7, $27, $30
 
 lab_pal:                     ; LABYRINTH ZONE
-	.BYTE   $F, $17, $27, $37; bkg
+	.BYTE   $F, $17, $27, $37 ; bkg
 	.BYTE   $F,  $C, $19, $39
 	.BYTE   $F, $15, $25, $35
 	.BYTE   $F, $12, $22, $32
-	.BYTE   $F,   1, $16, $36; spr
+	.BYTE   $F,   1, $16, $36 ; spr
 	.BYTE   $F,   1, $11, $36
-	.BYTE   $F,   4, $14, $30; X 36
+	.BYTE   $F,   4, $14, $30 ; X 36
 	.BYTE   $F,   7, $27, $30
 
 star_pal:                    ; STAR LIGHT ZONE
-	.BYTE   $F, $12, $22, $30; bkg
+	.BYTE   $F, $12, $22, $30 ; bkg
 	.BYTE   $F,   7,   6, $18
 	.BYTE   $F,  $A, $19, $30
 	.BYTE   $F, $17, $28, $38
-	.BYTE   $F,   1, $16, $36; spr
+	.BYTE   $F,   1, $16, $36 ; spr
 	.BYTE  $10,   1, $11, $36
-	.BYTE  $10,   4, $24, $30; X
+	.BYTE  $10,   4, $24, $30 ; X
 	.BYTE  $10,   7, $27, $30
 
 final_zone_pal:              ; FINAL ZONE (BOSS FIGHT)
-	.BYTE   $F,  $0, $10, $30; bkg
+	.BYTE   $F,  $0, $10, $30 ; bkg
 	.BYTE   $F, $1C, $10, $3C
 	.BYTE   $F,  $B, $1B, $28
 	.BYTE   $F,   4, $24, $34
-	.BYTE   $F,   1, $16, $36; spr
+	.BYTE   $F,   1, $16, $36 ; spr
 	.BYTE  $10,   1, $11, $36
 	.BYTE  $0F,  $F, $00, $10
 	.BYTE  $0F, $16, $36, $0F
 
 bonus_st_pal:                ; SPECIAL STAGE (SMS/GG)
-	.BYTE   $F, $17, $27, $30; bkg
+	.BYTE   $F, $17, $27, $30 ; bkg
 	.BYTE   $F, $05, $15, $30
 	.BYTE   $F, $11, $21, $30
 	.BYTE   $F, $03, $27, $15
-	.BYTE   $F,   1, $16, $36; spr
+	.BYTE   $F,   1, $16, $36 ; spr
 	.BYTE   $F,   1, $11, $36
-	.BYTE   $F,   7, $22, $30; X
+	.BYTE   $F,   7, $22, $30 ; X
 	.BYTE   $F,   8, $27, $30
 
 title_scr_pal:	incbin	menu\title.pal
 cheat_menu_pal:	incbin	menu\cheat_menu.pal
 
 scrap_brain_pal:             ; SCRAP BRAIN ZONE (FACTORY AREA)
-	.BYTE	$F, $17, $27, $37; bkg
+	.BYTE	$F, $17, $27, $37 ; bkg
 	.BYTE	$F, $14, $24, $34
 	.BYTE	$F,  $B, $1B, $2B
 	.BYTE	$F,   0, $10, $37
-	.BYTE	$F,   1, $16, $36; spr
+	.BYTE	$F,   1, $16, $36 ; spr
 	.BYTE	$F,   1, $11, $36
-	.BYTE	$F,  $4, $24, $30; X
+	.BYTE	$F,  $4, $24, $30 ; X
 	.BYTE	$F,   7, $27, $30
 		
 scrap_brain_pal2:            ; SCRAP BRAIN ZONE (UNDERWATER) 
-	.BYTE	$F, $17, $27, $37; bkg
+	.BYTE	$F, $17, $27, $37 ; bkg
 	.BYTE	$F, $14, $24, $34
 	.BYTE	$F,  $B, $1B, $2B
 	.BYTE	$F,   0, $10, $37
-	.BYTE	$F,   1, $16, $36; spr
+	.BYTE	$F,   1, $16, $36 ; spr
 	.BYTE	$F,   1, $11, $36
-	.BYTE	$F,  $5, $15, $30; X 35
+	.BYTE	$F,  $5, $15, $30 ; X 35
 	.BYTE	$F,   7, $27, $30
 		
 sega_logo_pal:             ; SEGA LOGO (INTRO SEQUENCE)
-	.BYTE	$30,$30,$11,$11; bkg
+	.BYTE	$30,$30,$11,$11 ; bkg
 	.BYTE	$30,$30,$11,$11
 	.BYTE	$30,$30,$11,$11
 	.BYTE	$30,$30,$11,$11
-	.BYTE	$30,$0F,$11,$30; spr
+	.BYTE	$30,$0F,$11,$30 ; spr
 	.BYTE	$30,$01,$11,$36
 	.BYTE	$30,$01,$16,$36
 	.BYTE	$30,$0F,$16,$36
 		
 options_menu_pal:          ; OPTIONS MENU
-	.BYTE	$0F,$02,$30,$12; bkg
+	.BYTE	$0F,$02,$30,$12 ; bkg
 	.BYTE	$0F,$02,$27,$37
 	.BYTE	$0F,$02,$12,$31
 	.BYTE	$0F,$0F,$0F,$0F
-	.BYTE	$0F,$11,$0F,$30; spr
-	.BYTE	$0F,$01,$11,$36
+	.BYTE	$0F,$11,$0F,$30 ; spr
+	.BYTE	$0F,$12,$12,$30
 	.BYTE	$0F,$01,$16,$36
 	.BYTE	$0F,$0F,$16,$36		
 
@@ -3227,6 +3230,7 @@ block_lower_240:
 life_for_100_rings_hack: ; jump from rings monitor
 life_for_rings:		; from normal rings
 		STY	rings_10s
+add_100_rings:
 		LDY	rings_100s
 		LDA	ring_bit_mask,Y
 		AND	lifes_for_rings_mask
@@ -3241,6 +3245,9 @@ life_for_rings:		; from normal rings
 		CMP	#99	; max 99 lives
 		BCS	@no_add_life
 		INC	player_lifes
+		LDA	current_music
+		CMP	#$22	; no break level win music
+		BEQ	@no_add_life
 		LDA	#$2C
 		STA	music_to_play
 @no_add_life:

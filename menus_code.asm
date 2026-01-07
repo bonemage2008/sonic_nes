@@ -4,14 +4,20 @@
 ;6A 6B 6C 6D 6E 6F 70 71 72 73
 version_sprites:
 		.BYTE	$65,$7A ; V_
-		.BYTE	$6C,$6E ; 24
-		.BYTE	$6B,$6C ; 12
-		.BYTE	$6C,$6F ; 25
+		
+		.BYTE	$6A,$6E ; 04
+		.BYTE	$6A,$6B ; 01
+		.BYTE	$6C,$70 ; 26
 
 ; konami-code
 cheat_code:
-		.byte	BUTTON_UP,BUTTON_UP,BUTTON_DOWN,BUTTON_DOWN
-		.byte	BUTTON_LEFT,BUTTON_RIGHT,BUTTON_LEFT,BUTTON_RIGHT,BUTTON_B,BUTTON_A
+    IF (SIMPLE_CHEAT=1) ; Código simple (SELECT)
+        .byte   BUTTON_SELECT
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    ELSE                ; Código Konami completo
+        .byte   BUTTON_UP,BUTTON_UP,BUTTON_DOWN,BUTTON_DOWN
+        .byte   BUTTON_LEFT,BUTTON_RIGHT,BUTTON_LEFT,BUTTON_RIGHT,BUTTON_B,BUTTON_A
+    ENDIF
 
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -154,7 +160,7 @@ loc_980B4:
 		INC	cheat_pos
 		LDA	cheat_pos
 		
-		IF	(TEST_MODE=1)
+		IF	(SIMPLE_CHEAT=1)
 		CMP	#1
 		ELSE
 		CMP	#10
@@ -287,7 +293,7 @@ options_menu_loop:
 		BEQ	@no_dec_menu_num
 		DEC	menu_pos
 		BPL	@set_update_attr
-		LDA	#2
+		LDA	#3
 		STA	menu_pos
 		BNE	@set_update_attr
 		
@@ -297,7 +303,7 @@ options_menu_loop:
 		BEQ	@no_inc_menu_num
 		LDX	menu_pos
 		INX
-		CPX	#3
+		CPX	#4
 		BNE	@next
 		LDX	#0
 @next		
@@ -310,19 +316,29 @@ options_menu_loop:
 
 		LDA	joy1_press
 		LDX	menu_pos
-		BEQ	@chk_swap_duty
+		BEQ	@chk_spin_ctrl
+		DEX
+		BEQ	@snd_test
 		DEX
 		BEQ	@chk_change_snd
-		TAX
-		JSR	sfx_test_select
-		JMP	@options_menu_next
-		
 @chk_swap_duty
 		AND	#BUTTON_LEFT|BUTTON_RIGHT|BUTTON_B|BUTTON_A
 		BEQ	@options_menu_next
 		LDA	var_Channels
 		EOR	#$40
 		STA	var_Channels
+		JMP	@options_menu_next
+
+@chk_spin_ctrl:
+		AND	#BUTTON_LEFT|BUTTON_RIGHT|BUTTON_B|BUTTON_A
+		BEQ	@options_menu_next
+		LDA	spin_ctrl_flag
+		EOR	#1
+		STA	spin_ctrl_flag
+		JMP	@options_menu_next
+@snd_test:
+		TAX
+		JSR	sfx_test_select
 		JMP	@options_menu_next
 		
 @chk_change_snd:
@@ -789,6 +805,14 @@ options_change_epsm:
 
 ; =============== S U B	R O U T	I N E =======================================
 
+; Sprite Coordinates
+; |  X  |  Y | Sprites |
+; -----------------------
+; | 110 | 046 | OFF    |
+; | 114 | 094 | 00     |
+; | 106 | 142 | 2A03   |
+; | 110 | 190 | OFF    |
+; | 176 | 217 | 99     |
 
 options_menu_sprites:
 		LDX	#4
@@ -817,6 +841,19 @@ options_menu_sprites:
 		INX
 		CPX	#32
 		BNE	@snd_chip_spr
+
+		LDY	#0
+		LDA	spin_ctrl_flag
+		BEQ	@spin_ctrl_spr
+		LDY	#12
+		
+@spin_ctrl_spr
+		LDA	acc_tiles_off,Y
+		INY
+		STA	sprites_Y,X
+		INX
+		CPX	#44
+		BNE	@spin_ctrl_spr
 		
 		LDA	menu_sfx
 		LSR
@@ -833,7 +870,7 @@ options_menu_sprites:
 		LDA	nums_tls,Y
 		STA	sprites_tile+4,X
 		
-		LDA	#183
+		LDA	#94
 		STA	sprites_Y,X
 		STA	sprites_Y+4,X
 		
@@ -841,11 +878,27 @@ options_menu_sprites:
 		STA	sprites_attr,X
 		STA	sprites_attr+4,X
 		
+		LDA	#1
+		STA	sprites_attr+8,X
+		STA	sprites_attr+12,X
+		
 		LDA	#116
 		STA	sprites_X,X
 		LDA	#116+8
 		STA	sprites_X+4,X
-
+		
+		LDA	#215
+		STA	sprites_Y+8,X
+		STA	sprites_Y+12,X
+		LDA	#176
+		STA	sprites_X+8,X
+		LDA	#176+8
+		STA	sprites_X+12,X
+		
+		LDA	#$F9 ; 9
+		STA	sprites_tile+8,X
+		STA	sprites_tile+12,X
+		
 		RTS
 		
 nums_tls:
@@ -855,28 +908,41 @@ nums_tls:
 		
 spr_tiles_off:
 		;.BYTE	$0E,$05,$05 ; OFF
-		.BYTE	55,$0E,$00,112
-		.BYTE	55,$05,$00,112+8
-		.BYTE	55,$05,$00,112+16
+		.BYTE	190,$0E,$00,112
+		.BYTE	190,$05,$00,112+8
+		.BYTE	190,$05,$00,112+16
 		
 spt_tile_on:
 		;.BYTE	$0E,$0D,$FF ; ON
-		.BYTE	55,$0E,$00,116
-		.BYTE	55,$0D,$00,116+8
-		.BYTE	55,$FF,$00,116+16
+		.BYTE	190,$0E,$00,116
+		.BYTE	190,$0D,$00,116+8
+		.BYTE	190,$FF,$00,116+16
 		
 		
 spr_tiles_2a03:
-		.BYTE	119,$1C,$00,104
-		.BYTE	119,$00,$00,104+8
-		.BYTE	119,$1A,$00,104+16
-		.BYTE	119,$1D,$00,104+24
+		.BYTE	142,$1C,$00,104
+		.BYTE	142,$00,$00,104+8
+		.BYTE	142,$1A,$00,104+16
+		.BYTE	142,$1D,$00,104+24
 		
 spr_tiles_ymf:
-		.BYTE	119,$04,$00,104
-		.BYTE	119,$0F,$00,104+8
-		.BYTE	119,$12,$00,104+16
-		.BYTE	119,$0C,$00,104+24
+		.BYTE	142,$04,$00,104
+		.BYTE	142,$0F,$00,104+8
+		.BYTE	142,$12,$00,104+16
+		.BYTE	142,$0C,$00,104+24
+		
+		
+acc_tiles_off:
+		;.BYTE	$0E,$05,$05 ; OFF
+		.BYTE	46,$0E,$00,112
+		.BYTE	46,$05,$00,112+8
+		.BYTE	46,$05,$00,112+16
+		
+acc_tile_on:
+		;.BYTE	$0E,$0D,$FF ; ON
+		.BYTE	46,$0E,$00,116
+		.BYTE	46,$0D,$00,116+8
+		.BYTE	46,$FF,$00,116+16		
 
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -906,7 +972,7 @@ options_update_attrs:
 		RTS
 
 mult_56:
-		.BYTE	0,56,56*2
+		.BYTE	0,56,56*2,56*3
 
 
 ; =============== S U B	R O U T	I N E =======================================
@@ -3505,8 +3571,14 @@ chrs_ending:
 		
 		.BYTE	$70,$72,$70,$71,$72,$C9 ; cont screen 24
 		
-		.BYTE	$72,$72,$C0,$C0,$C0,$C0	; options 30
+		.BYTE	$72,$7E,$C0,$C0,$C0,$C0	; options 30
 
+		org	$9E20
+options_attribs:
+		incbin	menu\options_attrs1.bin
+		incbin	menu\options_attrs2.bin
+		incbin	menu\options_attrs3.bin
+		incbin	menu\options_attrs4.bin		
 
 		.pad	$9F00
 cheat_menu_attr:

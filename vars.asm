@@ -72,6 +72,8 @@ sonic_Y_speed_l	equ	$39	; md var
 
 move_cam_delay	equ	$5B	; new var
 
+spin_ctrl_flag	equ	$67	; ctrl type for spin
+
 vrc7_irq_mode	equ	$87	; vrc7 irq mode mask
 
 sonic_status	equ	$8F	; md var
