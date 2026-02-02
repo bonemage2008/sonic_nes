@@ -3446,7 +3446,7 @@ j_draw_sonic:
 	ENDIF
 
 
-		.PAD	$FF80,$FF
+		.PAD	$FF90,$FF
 ring_byte_base:	.BYTE	 0,   0,   0,	0,   0,	  0,   0,   0,	 1,   1,   1,	1,   1,	  1,   1,   1
 		.BYTE	 2,   2,   2,	2,   2,	  2,   2,   2,	 3,   3,   3,	3,   3,	  3,   3,   3
 bitfield:
@@ -3455,18 +3455,16 @@ ring_bit_mask:	.BYTE	 1,   2,   4,	8, $10,	$20, $40, $80,	 1,   2,   4,	8, $10,	
 rings_bit_mask:	.BYTE  $FE, $FD, $FB, $F7, $EF,	$DF, $BF, $7F, $FE, $FD, $FB, $F7, $EF,	$DF, $BF, $7F
 		.BYTE  $FE, $FD, $FB, $F7, $EF,	$DF, $BF, $7F, $FE, $FD, $FB, $F7, $EF,	$DF, $BF, $7F
 
-; nintendo header
-		.PAD	$FFE0,$FF ; name
-		.BYTE	'SONIC THE HEDGEH'
-		.pad	$FFF0,$20
+; nintendo header (sin nombre, solo campos técnicos)
+		.PAD	$FFF0,$FF
 prg_summ:	.WORD	$0000	; prg checksum
 		.WORD	$0000	; chr checksum
 		.BYTE	$F7	; 512+256
 		.BYTE	$84	; MMC3
-		.BYTE	$01	; title in ASCII
-		.BYTE	$0F	; title length
+		.BYTE	$00	; title in ASCII
+		.BYTE	$00	; title length
 		.BYTE	$00	; unl
-		.BYTE	$100-($F7+$84+$01+$0F)&$FF	; header checksum
+		.BYTE	$100-($F7+$84+$00+$00)&$FF 	; header checksum
 ; vectors
 		.PAD	$FFFA,$FF
 		.WORD	NMI
